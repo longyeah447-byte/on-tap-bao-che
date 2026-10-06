@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ôn Tập 150 Câu Trắc Nghiệm Bào Chế Học</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800">
+    <!-- Header -->
+    <header class="bg-indigo-600 text-white shadow-md">
+        <div class="max-w-4xl mx-auto px-4 py-6 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold">Ôn Tập Trắc Nghiệm Bào Chế Học (150 Câu)</h1>
+            <p class="text-indigo-200 mt-1 text-sm md:text-base">Ngân hàng câu hỏi tổng hợp toàn diện các bài học Bào chế đại cương & kỹ thuật</p>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl mx-auto px-4 py-8">
+        <!-- Setup Screen -->
+        <div id="setup-screen" class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <h2 class="text-xl font-semibold mb-4 text-slate-700 border-b pb-2">Cấu hình bài kiểm tra</h2>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Chọn chủ đề ôn tập:</label>
+                    <select id="topic-select" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="all">Tất cả các chủ đề (Tổng hợp 150 câu)</option>
+                        <option value="dai_cuong">Bài 1: Đại cương về Bào chế học</option>
+                        <option value="hoa_tan">Bài 2: Kỹ thuật Hòa tan - Làm trong</option>
+                        <option value="nghien_tan">Bài 4: Kỹ thuật Nghiền tán, Rây, Trộn đều</option>
+                        <option value="sinh_duoc">Đại cương về Sinh dược học</option>
+                        <option value="do_con">Kỹ thuật Đo độ cồn - Pha cồn</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-600 mb-1">Số lượng câu hỏi:</label>
+                    <select id="count-select" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="10">10 câu</option>
+                        <option value="20">20 câu</option>
+                        <option value="30">30 câu</option>
+                        <option value="50">50 câu</option>
+                        <option value="100">100 câu</option>
+                        <option value="150" selected>Toàn bộ (Tối đa)</option>
+                    </select>
+                </div>
+                <button onclick="startQuiz()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-md">
+                    Bắt đầu làm bài
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8">
+            <div class="flex justify-between items-center mb-6 border-b pb-3">
+                <span id="question-tracker" class="text-sm font-semibold text-indigo-600">Câu 1 / 10</span>
+                <span id="score-tracker" class="text-sm font-medium text-slate-500">Đúng: 0</span>
+            </div>
+            
+            <div id="question-container" class="mb-6">
+                <!-- Question text -->
+            </div>
+
+            <div id="options-container" class="space-y-3 mb-6">
+                <!-- Options -->
+            </div>
+
+            <div id="explanation-container" class="hidden bg-slate-50 border-l-4 border-indigo-500 p-4 rounded-r-lg mb-6 text-sm">
+                <!-- Rationale -->
+            </div>
+
+            <div class="flex justify-end">
+                <button id="next-btn" onclick="nextQuestion()" class="hidden bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 px-6 rounded-lg transition duration-200">
+                    Câu tiếp theo
+                </button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 text-center">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Hoàn thành bài tập!</h2>
+            <p id="final-score-text" class="text-lg text-slate-600 mb-6">Bạn đã trả lời đúng 0/10 câu hỏi.</p>
+            <div class="flex justify-center space-x-4">
+                <button onclick="restartQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200">
+                    Làm lại bài khác
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- JavaScript Logic with 150 Questions Bank -->
+    <script>
+        const questionBank = [
+            // --- ĐẠI CƯƠNG BÀO CHẾ (Khoảng 30 câu) ---
+            {
+                topic: "dai_cuong",
+                question: "Bào chế học là môn khoa học chuyên nghiên cứu cơ sở lý luận và kỹ thuật thực hành về vấn đề gì?",
+                options: [
+                    "Pha chế, sản xuất, kiểm tra chất lượng, đóng gói, bảo quản các dạng thuốc",
+                    "Chỉ nghiên cứu thử nghiệm lâm sàng dược chất trên người",
+                    "Chỉ chuyên sâu về tổng hợp hóa dược và nguyên liệu ban đầu",
+                    "Nghiên cứu tác dụng dược lý và độc tính của thuốc trên động vật"
+                ],
+                correct: 0,
+                rationale: "Bào chế học định nghĩa là môn khoa học nghiên cứu cơ sở lý luận và kỹ thuật thực hành về pha chế, sản xuất, kiểm tra chất lượng, đóng gói, bảo quản các dạng thuốc và chế phẩm bào chế."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Ai được coi là người đặt nền móng cho ngành dược nói chung và môn bào chế học nói riêng (Pharmacie galénique)?",
+                options: ["Hypocrat", "Galien", "Tuệ Tĩnh", "Hải Thượng Lãn Ông"],
+                correct: 1,
+                rationale: "Galien là người đầu tiên đề ra các công thức, cách điều chế thuốc và phân loại các thuốc men, đặt nền móng cho bào chế học."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Thành phần nào sau đây tiếp xúc trực tiếp với thuốc và được xem như một thành phần của dạng thuốc?",
+                options: ["Bao bì cấp II (thứ cấp)", "Bao bì cấp I (sơ cấp)", "Nhãn thuốc bên ngoài", "Hộp carton đựng vỉ thuốc"],
+                correct: 1,
+                rationale: "Bao bì cấp I (sơ cấp) là bao bì tiếp xúc trực tiếp với thuốc, đóng vai trò quan trọng và được xem như một phần của dạng thuốc."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Thuốc biệt dược gốc (thuốc phát minh) là gì?",
+                options: [
+                    "Thuốc generic sản xuất không có nhượng quyền sau khi hết hạn bảo hộ",
+                    "Thuốc được cấp phép lưu hành đầu tiên dựa trên đầy đủ số liệu về chất lượng, an toàn, hiệu quả",
+                    "Thuốc tự pha chế theo đơn tại các nhà thuốc bệnh viện",
+                    "Thuốc đông dược cổ truyền lưu truyền trong dân gian"
+                ],
+                correct: 1,
+                rationale: "Thuốc phát minh hay thuốc gốc là thuốc được cấp phép lưu hành đầu tiên trên cơ sở có đầy đủ số liệu chứng minh chất lượng, an toàn và hiệu quả."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Hệ thống quản lý chất lượng trong sản xuất thuốc theo tiêu chuẩn quốc tế phổ biến hiện nay được viết tắt là gì?",
+                options: ["ISO 9001", "GMP (Good Manufacturing Practices)", "GLP", "GSP"],
+                correct: 1,
+                rationale: "GMP (Thực hành tốt sản xuất thuốc) là tiêu chuẩn bắt buộc áp dụng trong các cơ sở sản xuất thuốc để đảm bảo chất lượng."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Dược điển Việt Nam hiện hành đang áp dụng là phiên bản mấy?",
+                options: ["Dược điển Việt Nam I", "Dược điển Việt Nam II", "Dược điển Việt Nam III", "Dược điển Việt Nam V"],
+                correct: 3,
+                rationale: "Dược điển Việt Nam V là tiêu chuẩn quốc gia về thuốc hiện hành tại Việt Nam."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Thuốcgeneric (thuốcgeneric) là gì?",
+                options: [
+                    "Thuốc có cùng dược chất, hàm lượng, dạng bào chế với thuốc biệt dược gốc và đã hết hạn bảo hộ độc quyền",
+                    "Thuốc độc bảng A mới được nghiên cứu",
+                    "Thuốc chỉ được bào chế dưới dạng lỏng",
+                    "Thuốc có giá thành đắt nhất trên thị trường"
+                ],
+                correct: 0,
+                rationale: "Thuốc generic là thuốc thay thế tương đương với thuốc biệt dược gốc khi thuốc gốc đã hết hạn bảo hộ."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Tá dược đóng vai trò gì trong công thức một dạng thuốc?",
+                options: [
+                    "Chỉ làm tăng khối lượng thuốc mà không có ý nghĩa gì khác",
+                    "Giúp hòa tan, ổn định, định hình dạng thuốc và điều hòa sự giải phóng dược chất",
+                    "Làm tăng độc tính của dược chất chính",
+                    "Thay thế hoàn toàn tác dụng của dược chất"
+                ],
+                correct: 1,
+                rationale: "Tá dược là chất phụ gia quan trọng giúp tạo hình, bảo vệ, tăng độ ổn định và kiểm soát giải phóng dược chất."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Đâu KHÔNG phải là mục đích của việc bào chế thuốc?",
+                options: [
+                    "Biến dược chất thành dạng thuốc dễ sử dụng, an toàn và hiệu quả",
+                    "Làm giảm hẳn tác dụng chữa bệnh của dược chất",
+                    "Che giấu mùi vị khó chịu của dược chất",
+                    "Kéo dài thời gian tác dụng hoặc khu trú tác dụng của thuốc"
+                ],
+                correct: 1,
+                rationale: "Bào chế nhằm tối ưu hóa hiệu quả điều trị chứ không làm giảm tác dụng chữa bệnh."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Tiêu chuẩn GLP viết tắt của cụm từ tiếng Anh nào?",
+                options: [
+                    "Good Laboratory Practices (Thực hành tốt phòng thí nghiệm)",
+                    "Good Manufacturing Practices",
+                    "Good Storage Practices",
+                    "Good Distribution Practices"
+                ],
+                correct: 0,
+                rationale: "GLP là Thực hành tốt phòng kiểm nghiệm/phòng thí nghiệm thuốc."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Tiêu chuẩn GSP viết tắt của tiêu chuẩn nào trong ngành dược?",
+                options: [
+                    "Thực hành tốt bảo quản thuốc",
+                    "Thực hành tốt phân phối thuốc",
+                    "Thực hành tốt nhà thuốc",
+                    "Thực hành tốt sản xuất thuốc"
+                ],
+                correct: 0,
+                rationale: "GSP là Good Storage Practices (Thực hành tốt bảo quản thuốc)."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Tiêu chuẩn GDP viết tắt của tiêu chuẩn nào?",
+                options: [
+                    "Thực hành tốt phân phối thuốc",
+                    "Thực hành tốt nhà thuốc",
+                    "Thực hành tốt nuôi trồng dược liệu",
+                    "Thực hành tốt thử lâm sàng"
+                ],
+                correct: 0,
+                rationale: "GDP là Good Distribution Practices (Thực hành tốt phân phối thuốc)."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Tiêu chuẩn GPP viết tắt của tiêu chuẩn nào?",
+                options: [
+                    "Thực hành tốt cơ sở bán lẻ thuốc (nhà thuốc)",
+                    "Thực hành tốt sản xuất dược phẩm",
+                    "Thực hành tốt kiểm nghiệm",
+                    "Thực hành tốt bảo quản"
+                ],
+                correct: 0,
+                rationale: "GPP là Good Pharmacy Practices (Thực hành tốt cơ sở bán lẻ thuốc)."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Dạng thuốc rắn phân liều ví dụ tiêu biểu nhất là gì?",
+                options: ["Thuốc bột uống, thuốc cốm, viên nén, viên nang", "Dung dịch uống, siro", "Thuốc mỡ, kem bôi da", "Thuốc tiêm truyền tĩnh mạch"],
+                correct: 0,
+                rationale: "Viên nén, viên nang, thuốc bột phân liều là các dạng thuốc rắn được phân liều cụ thể."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Dạng thuốc lỏng để uống bao gồm các loại nào?",
+                options: ["Dung dịch, hỗn dịch, nhũ dịch uống", "Thuốc mỡ, cao dán", "Viên nén sủi bọt", "Thuốc xịt mũi"],
+                correct: 0,
+                rationale: "Dung dịch, hỗn dịch, nhũ dịch dùng đường uống thuộc nhóm dạng thuốc lỏng."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Dạng thuốc bán rắn bôi da bao gồm:",
+                options: ["Thuốc mỡ (ointment), kem (cream), gel, bột nhão", "Dung dịch nhỏ mắt", "Viên đạn đặt trực tràng", "Thuốc tiêm bắp"],
+                correct: 0,
+                rationale: "Thuốc mỡ, kem, gel, bột nhão là các dạng thuốc bán rắn dùng ngoài da hoặc niêm mạc."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Đường dùng thuốc nào sau đây đi thẳng vào tuần hoàn chung mà không qua gan lần đầu (tránh hiệu ứng vượt qua lần đầu ở gan)?",
+                options: ["Đường uống", "Đường đặt trực tràng (một phần), đường tiêm tĩnh mạch, đường ngậm dưới lưỡi", "Đường tiêu hóa qua dạ dày", "Đường uống qua ruột non"],
+                correct: 1,
+                rationale: "Tiêm tĩnh mạch, ngậm dưới lưỡi và một phần trực tràng giúp tránh chuyển hóa qua gan lần đầu."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Hệ thống phân loại sinh dược học (BCS) dựa trên hai yếu tố chính nào của dược chất?",
+                options: ["Độ tan và tính thấm qua màng sinh học", "Khối lượng mol và màu sắc", "Điểm chảy và độ nhớt", "pH dung dịch và độ ẩm"],
+                correct: 0,
+                rationale: "Hệ thống BCS phân loại dược chất dựa trên độ hòa tan và tính thấm qua màng ruột."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Theo hệ thống BCS, dược chất thuộc nhóm nào có độ tan cao và tính thấm cao?",
+                options: ["Nhóm I", "Nhóm II", "Nhóm III", "Nhóm IV"],
+                correct: 0,
+                rationale: "Nhóm I trong BCS có độ tan cao và tính thấm cao qua màng."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Theo hệ thống BCS, dược chất thuộc nhóm nào có độ tan thấp nhưng tính thấm cao?",
+                options: ["Nhóm I", "Nhóm II", "Nhóm III", "Nhóm IV"],
+                correct: 1,
+                rationale: "Nhóm II trong BCS có độ tan thấp nhưng khả năng thấm qua màng rất tốt."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Hồ sơ tiêu chuẩn chất lượng của một thuốc thành phẩm bao gồm các tài liệu nào?",
+                options: ["Tiêu chuẩn cơ sở (TCCS) hoặc Dược điển, phương pháp thử, mức chỉ tiêu", "Chỉ có nhãn mác bao bì", "Tên nhà phân phối độc quyền", "Sách hướng dẫn sử dụng cho bệnh nhân"],
+                correct: 0,
+                rationale: "Tiêu chuẩn chất lượng thuốc bao gồm tiêu chuẩn kỹ thuật, chỉ tiêu cảm quan, định tính, định lượng, độ tinh khiết..."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Thuốc độc bảng A theo quy định trước đây bao gồm các chất có đặc tính gì?",
+                options: ["Độc tính rất cao, liều dùng rất nhỏ", "Ít độc, dùng liều lớn thoải mái", "Chỉ dùng để làm tá dược", "Không có tác dụng dược lý"],
+                correct: 0,
+                rationale: "Thuốc bảng A là thuốc độc tính cao, khi cấp phát bảo quản có quy chế quản lý đặc biệt."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Thuốc gây nghiện thuộc nhóm quản lý đặc biệt nào?",
+                options: ["Quản lý theo quy chế quản lý thuốc gây nghiện, hướng tâm thần", "Bán tự do ở tiệm tạp hóa", "Không cần quản lý nguồn gốc", "Chỉ kiểm tra khi xuất khẩu"],
+                correct: 0,
+                rationale: "Thuốc gây nghiện có quy chế quản lý cực kỳ ngặt nghèo nhằm tránh lạm dụng và gây nghiện."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Hạn dùng của thuốc được định nghĩa là gì?",
+                options: ["Khoảng thời gian mà thuốc vẫn đảm bảo chất lượng theo tiêu chuẩn đăng ký dưới điều kiện bảo quản quy định", "Thời gian thuốc để bên ngoài không đóng nắp", "Thời gian thuốc bị phân hủy hoàn toàn thành chất độc", "Thời gian từ lúc sản xuất đến khi bệnh nhân mở nắp"],
+                correct: 0,
+                rationale: "Hạn dùng là khoảng thời gian thuốc duy trì được chất lượng an toàn và hiệu quả."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Nhiệt độ bảo quản đối với điều kiện 'Nơi khô mát' theo Dược điển là bao nhiêu?",
+                options: ["Từ 8 đến 15 độ C", "Từ 15 đến 25 độ C (hoặc dưới 30 độ C)", "Từ 30 đến 40 độ C", "Dưới 0 độ C"],
+                correct: 1,
+                rationale: "Nơi khô mát thông thường hiểu là nhiệt độ phòng từ 15 đến 25 độ C, tránh ẩm mốc."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Tủ lạnh dùng để bảo quản thuốc ở điều kiện 'Lạnh' có nhiệt độ bao nhiêu?",
+                options: ["Từ 2 đến 8 độ C", "Từ 8 đến 15 độ C", "Từ -20 đến 0 độ C", "Từ 15 đến 25 độ C"],
+                correct: 0,
+                rationale: "Nhiệt độ lạnh bảo quản vaccine, sinh phẩm y tế chuẩn từ 2 đến 8 độ C."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Đâu là yếu tố ngoại vi ảnh hưởng lớn nhất đến sự phân hủy hóa học của dược chất trong thuốc?",
+                options: ["Nhiệt độ, độ ẩm, ánh sáng, pH môi trường", "Màu sắc của vỏ hộp ngoài cùng", "Tên thương mại của thuốc", "Tên nhà sản xuất nước ngoài"],
+                correct: 0,
+                rationale: "Nhiệt độ, độ ẩm, ánh sáng và pH là các yếu tố chính gây xúc tác phản ứng phân hủy dược chất."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Phương pháp tiệt khuẩn bằng nhiệt khô thường áp dụng cho đối tượng nào?",
+                options: ["Dụng cụ thủy tinh chịu nhiệt, bột chịu nhiệt, dầu mỡ", "Dung dịch nước tiêm truyền nhạy cảm nhiệt", "Dụng cụ bằng nhựa mềm", "Vắc xin sống"],
+                correct: 0,
+                rationale: "Nhiệt khô (tủ sấy 160-180 độ C) dùng cho đồ thủy tinh khô, dụng cụ kim loại, chất béo chịu nhiệt."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Phương pháp tiệt khuẩn bằng nhiệt ẩm (nồi hấp autoclave) dùng áp suất hơi nước ở nhiệt độ chuẩn thường là:",
+                options: ["121 độ C trong 15-20 phút ở áp suất 1 atm dư", "100 độ C trong 5 phút", "180 độ C trong 2 giờ", "60 độ C trong 30 phút"],
+                correct: 0,
+                rationale: "Nhiệt ẩm tiêu chuẩn dùng hơi nước bão hòa dưới áp lực ở 121 độ C trong 15-20 phút."
+            },
+            {
+                topic: "dai_cuong",
+                question: "Màng lọc vô trùng có kích thước lỗ lọc tiêu chuẩn để loại bỏ vi khuẩn là bao nhiêu?",
+                options: ["0.22 µm (hoặc 0.45 µm tùy mục đích)", "10 µm", "100 µm", "1 µm"],
+                correct: 0,
+                rationale: "Màng lọc 0.22 µm có khả năng giữ lại hầu hết vi khuẩn và vi sinh vật, dùng để tiệt khuẩn lạnh dung dịch."
+            },
+
+            // --- KỸ THUẬT HÒA TAN - LÀM TRONG (Khoảng 30 câu) ---
+            {
+                topic: "hoa_tan",
+                question: "Độ tan của một chất được biểu thị bằng:",
+                options: [
+                    "Số ml dung môi tối đa cần thiết để hòa tan 1g chất tan ở điều kiện chuẩn",
+                    "Số gam chất tan trong 100ml dung môi",
+                    "Số mol chất tan trong 1 lít dung dịch",
+                    "Tỷ lệ thể tích dung dịch trên khối lượng chất tan"
+                ],
+                correct: 0,
+                rationale: "Độ tan biểu thị bằng số ml dung môi cần thiết để hòa tan hoàn toàn 1g chất tan ở điều kiện chuẩn."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Trong phương pháp tạo dẫn chất dễ tan, dung dịch Lugol được điều chế bằng cách hòa tan Iod nhờ sự hiện diện của chất nào?",
+                options: ["Natri clorid (NaCl)", "Kali iodid (KI)", "Natri benzoat", "Ethanol tuyệt đối"],
+                correct: 1,
+                rationale: "Iod hòa tan tốt trong dung dịch KI nhờ tạo phức tan KI3."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Yếu tố nào sau đây làm tăng tốc độ hòa tan của dược chất rắn?",
+                options: [
+                    "Tăng kích thước tiểu phân chất rắn",
+                    "Tăng độ nhớt của môi trường dung môi",
+                    "Khuấy trộn đều và giảm kích thước tiểu phân",
+                    "Giảm nhiệt độ của hệ thống dung dịch"
+                ],
+                correct: 2,
+                rationale: "Khuấy trộn và giảm kích thước tiểu phân giúp tăng bề mặt tiếp xúc và tốc độ khuyếch tán, từ đó tăng tốc độ hòa tan."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Vật liệu lọc nào có cấu tạo bằng những hạt thủy tinh gắn với nhau, trơ hóa học, có điện tích âm và loại G5 có thể lọc tiệt khuẩn?",
+                options: ["Giấy lọc cellulose", "Thủy tinh xốp", "Nến lọc Chamberland", "Màng hữu cơ Millipore"],
+                correct: 1,
+                rationale: "Thủy tinh xốp (G1-G5) rất trơ hóa học, thông dụng trong phòng thí nghiệm và sản xuất."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Hằng số điện môi của dung môi ảnh hưởng trực tiếp đến khả năng hòa tan chất nào?",
+                options: ["Chất điện ly và chất phân cực", "Chất không phân cực dạng dầu mỡ", "Khí trơ", "Kim loại nặng"],
+                correct: 0,
+                rationale: "Hằng số điện môi cao giúp hòa tan các chất phân cực và chất điện ly tốt do làm giảm lực hút tĩnh điện giữa các ion."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Dung môi nào sau đây được coi là dung môi phân cực mạnh, an toàn và thông dụng nhất trong ngành dược?",
+                options: ["Nước cất", "Ether", "Cloroform", "Benzen"],
+                correct: 0,
+                rationale: "Nước cất là dung môi phổ biến, an toàn hàng đầu trong bào chế thuốc nước."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Hiện tượng đồng kết tinh hoặc tăng độ tan của dược chất ít tan nhờ sự có mặt của một chất thứ ba được gọi là gì?",
+                options: ["Hiện tượng đồng tan / chất đồng dung môi (cosolvent) hoặc chất tăng độ tan", "Hiện tượng kết tủa phân đoạn", "Hiện tượng lên men", "Hiện tượng oxy hóa khử"],
+                correct: 0,
+                rationale: "Sử dụng chất đồng dung môi (như cồn, glycerin, propylenglycol) hoặc chất diện hoạt giúp tăng độ tan dược chất ít tan."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Phương trình Noyes - Whitney diễn tả đại lượng nào?",
+                options: ["Tốc độ hòa tan của dược chất rắn vào dung môi", "Độ nhớt của dung dịch lỏng", "Sự hấp thu qua màng ruột", "Tốc độ bài tiết qua thận"],
+                correct: 0,
+                rationale: "Phương trình Noyes-Whitney mô tả tốc độ hòa tan dựa trên diện tích bề mặt, hệ số khuếch tán, độ chênh lệch nồng độ và bề dày lớp khuếch tán."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Theo phương trình Noyes - Whitney, yếu tố nào làm tăng tốc độ hòa tan khi ta nghiền nhỏ dược chất?",
+                options: ["Tăng diện tích bề mặt tiếp xúc (S)", "Giảm hệ số khuếch tán (D)", "Tăng độ dày lớp khuyếch tán (h)", "Giảm độ tan bão hòa (Cs)"],
+                correct: 0,
+                rationale: "Nghiền nhỏ làm tăng diện tích bề mặt (S), từ đó đẩy nhanh tốc độ hòa tan theo Noyes - Whitney."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Nước dùng để pha chế thuốc tiêm bắt buộc phải đạt tiêu chuẩn nào?",
+                options: ["Nước cất để tiêm (WFI - Water for Injection), không có pyrogen", "Nước máy đun sôi để nguội", "Nước khoáng thiên nhiên", "Nước giếng khoan đã lọc cát"],
+                correct: 0,
+                rationale: "Nước pha thuốc tiêm đòi hỏi độ tinh khiết tuyệt đối, không chứa pyrogen (chất gây sốt) và vi sinh vật."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Chất gây sốt (pyrogen) thực chất có bản chất là gì?",
+                options: ["Lipopolysaccharid từ thành tế bào vi khuẩn Gram âm", "Ion natri dư thừa", "Đường glucose mạch nhánh", "Vitamin tan trong dầu"],
+                correct: 0,
+                rationale: "Pyrogen nội độc tố vi khuẩn Gram âm có nhiệt độ bền cao, gây sốt khi tiêm vào cơ thể."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Để loại bỏ pyrogen có trong nước cất hoặc dụng cụ thủy tinh, người ta thường dùng phương pháp nào?",
+                    options: ["Nhiệt độ cao (sấy khô trên 250 độ C hoặc cất lại với hệ thống cất tia nước)", "Lọc qua giấy lọc thường", "Để tủ lạnh ngăn đá", "Sục khí CO2"],
+                correct: 0,
+                rationale: "Pyrogen bền với nhiệt độ thường nhưng bị phá hủy hoàn toàn ở nhiệt độ sấy khô rất cao (>250 độ C) hoặc chưng cất đặc biệt."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Ethanol (cồn thực phẩm) khi trộn lẫn với nước sẽ xảy ra hiện tượng vật lý gì về mặt thể tích?",
+                options: ["Thể tích hỗn hợp bị co lại nhỏ hơn tổng thể tích các thành phần ban đầu", "Thể tích tăng lên gấp đôi", "Không thay đổi thể tích", "Tách thành 2 lớp rõ rệt"],
+                correct: 0,
+                rationale: "Hỗn hợp nước và ethanol có hiện tượng co thể tích do sự liên kết hydro giữa các phân tử."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Glycerin thường được dùng làm chất đồng dung môi trong các dung dịch nước vì lý do gì?",
+                options: ["Làm tăng độ nhớt, giảm tốc độ lắng và tăng độ ổn định của dung dịch", "Làm bay hơi nhanh lập tức", "Làm dung dịch có màu đỏ cam", "Làm sủi bọt mạnh"],
+                correct: 0,
+                rationale: "Glycerin có tính nhớt, an toàn, giúp hòa tan tốt một số dược chất ít tan trong nước và tăng cảm giác êm dịu."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Propylen glycol có đặc tính gì trong bào chế thuốc nước?",
+                options: ["Là chất lỏng sánh, đồng dung môi hữu cơ tốt, ít độc hơn ethylene glycol", "Là chất khí dễ cháy nổ", "Là chất rắn kết tinh màu trắng", "Là muối vô cơ không tan"],
+                correct: 0,
+                rationale: "Propylen glycol được dùng rộng rãi làm dung môi đồng hòa tan cho các vitamin nhóm B hoặc các dược chất ít tan."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Sirup đơn (Sirupus simplex) trong Dược điển có nồng độ đường sucrose theo khối lượng trong nước là bao nhiêu?",
+                options: ["Khoảng 64% khối lượng (tương đương 82g đường trong 100ml nước)", "10% khối lượng", "50% khối lượng", "99% khối lượng"],
+                correct: 0,
+                rationale: "Sirup đơn chuẩn có nồng độ đường cao (khoảng 64-65% khối lượng), có khả năng tự bảo quản chống nấm mốc tốt."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Mục đích chính của việc thêm acid citric hoặc natri citrat vào một số dung dịch thuốc uống là gì?",
+                options: ["Điều chỉnh pH, tăng độ ổn định hoặc tạo hệ đệm chống tủa", "Làm cho thuốc có màu xanh lá", "Làm thuốc có vị cay nồng", "Làm giảm độ hòa tan của dược chất chính"],
+                correct: 0,
+                rationale: "Hệ đệm citrat giúp duy trì pH ổn định, tránh hiện tượng kết tủa hoặc thủy phân dược chất."
+            },
+            {
+                topic: "Honor",
+                question: "Phương pháp lọc nào sau đây sử dụng áp suất thấp (chân không) để kéo dung dịch qua màng lọc nhanh hơn?",
+                options: ["Lọc dưới áp suất giảm (lọc chân không bằng bình Büchner)", "Lọc bằng phễu thường dưới trọng lực", "Lọc qua vải bông bằng tay", "Lọc ly tâm siêu tốc"],
+                correct: 0,
+                rationale: "Lọc chân không giúp tăng nhanh tốc độ lọc đối với các dung dịch có độ nhớt vừa phải hoặc thể tích lớn."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Khi dung dịch thuốc có chứa các tiểu phân lơ lửng kích thước nhỏ khó lọc bằng giấy lọc thường, người ta thường dùng chất trợ lọc nào?",
+                options: ["Bột Talc, than hoạt, bột giấy hoặc kieselguhr (đất lọc)", "Đường kính trắng", "Muối ăn tinh khiết", "Bột mì"],
+                correct: 0,
+                rationale: "Chất trợ lọc tạo thành một lớp mạng xốp trên phễu lọc giúp giữ lại các tiểu phân keo mịn."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Than hoạt tính ngoài khả năng trợ lọc còn có tính chất đặc biệt nào trong quá trình làm trong dung dịch?",
+                options: ["Hấp phụ các chất màu, tạp chất hữu cơ, pyrogen hoặc vi khuẩn", "Hòa tan hoàn toàn trong nước tạo dung dịch kiềm", "Tạo hương thơm trái cây", "Làm đông đặc dung dịch ngay lập tức"],
+                correct: 0,
+                rationale: "Than hoạt có diện tích bề mặt riêng rất lớn, khả năng hấp phụ mạnh các chất màu và tạp chất."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Dung dịch thuốc dùng để nhỏ mắt bắt buộc phải đảm bảo các yêu cầu kỹ thuật khắt khe nào?",
+                options: ["Vô khuẩn, đẳng trương, pH phù hợp, không có cơ học và ổn định", "Chỉ cần trong suốt và có mùi thơm", "Có màu sắc sặc sỡ dễ nhận biết", "Có độ nhớt cực cao như hồ dán"],
+                correct: 0,
+                rationale: "Thuốc nhỏ mắt là chế phẩm vô khuẩn tiếp xúc trực tiếp niêm mạc nhãn cầu nên phải vô khuẩn, đẳng trương và pH sinh lý."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Dung dịch nước mắt nhân tạo thường được bổ sung chất gì để làm tăng độ nhớt, kéo dài thời gian lưu trên mắt?",
+                options: ["Methylcellulose (MC), Hydroxypropyl methylcellulose (HPMC), hoặc PVA", "Acid sulfuric đậm đặc", "Cồn 90 độ", "Dầu hỏa"],
+                correct: 0,
+                rationale: "Các polymer cellulose giúp tăng độ nhớt nước mắt nhân tạo, giữ ẩm lâu hơn trên bề mặt giác mạc."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Nước muối sinh lý NaCl 0.9% là dung dịch có tính chất gì so với dịch tế bào cơ thể?",
+                options: ["Đẳng trương", "Ưu trương", "Nhược trương", "Siêu tinh khiết không ion"],
+                correct: 0,
+                rationale: "NaCl 0.9% có áp suất thẩm phán tương đương dịch cơ thể (đẳng trương)."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Dung dịch thuốc uống dạng giọt (Drops) có đặc điểm gì so với dung dịch uống thông thường?",
+                options: ["Thể tích nhỏ, đậm đặc dược chất, dùng với số giọt xác định bằng ống nhỏ giọt chuẩn", "Thể tích lớn hàng lít để uống giải khát", "Dùng để tiêm tĩnh mạch nhanh", "Dùng để nhỏ trực tiếp vào tai giữa"],
+                correct: 0,
+                rationale: "Thuốc uống dạng giọt có hàm lượng dược chất cao trong thể tích nhỏ, thuận tiện phân liều theo giọt."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Kỹ thuật hòa tan các chất độc bảng A, B vào dung dịch nước cần lưu ý nguyên tắc nào?",
+                options: ["Hòa tan chất độc vào một phần nước riêng trước, kiểm tra kỹ rồi mới gộp vào thể tích chung", "Đổ toàn bộ chất độc vào nồi rồi cho nước sôi vào khuấy mạnh", "Nghiền khô chất độc chung với cát", "Không cần cân đong chính xác"],
+                correct: 0,
+                rationale: "Nguyên tắc pha chế chất độc bảng A, B là phải hòa tan riêng, định lượng kiểm tra cẩn thận để đảm bảo an toàn tuyệt đối."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Thuốc gội đầu trị gàu dạng dung dịch hoặc dầu gội thường xếp vào nhóm chế phẩm nào trong bào chế?",
+                options: ["Dạng thuốc lỏng dùng ngoài da", "Thuốc tiêm dưới da", "Thuốc uống toàn thân", "Thuốc nhỏ mắt"],
+                correct: 0,
+                rationale: "Dầu gội trị liệu là dạng thuốc lỏng dùng ngoài da tác dụng tại chỗ."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Cloramphenicol dung dịch nhỏ mắt thường có nồng độ thông dụng là bao nhiêu?",
+                options: ["0.4% hoặc 0.5%", "10%", "50%", "90%"],
+                correct: 0,
+                rationale: "Cloramphenicol 0.4% là nồng độ chuẩn phổ biến trong các chế phẩm nước nhỏ mắt kháng sinh."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Khi pha chế dung dịch cao dược liệu hoặc cồn thuốc với nước, thường xảy ra hiện tượng gì?",
+                options: ["Đục hoặc kết tủa do các chất ít tan trong cồn (như nhựa, tanin) bị tách ra khi giảm nồng độ cồn", "Dung dịch đổi màu xanh lục đậm", "Tạo khí sủi bọt liên tục", "Bay hơi hoàn toàn biến mất"],
+                correct: 0,
+                rationale: "Hiện tượng tủa nhựa/tannin thường gặp khi pha loãng cồn thuốc với nước do thay đổi độ phân cực dung môi."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Để khắc phục hiện tượng tủa khi pha cồn thuốc hoặc cao thuốc với nước, dược sĩ thường xử lý bằng cách nào?",
+                options: ["Lọc bỏ tủa nếu không ảnh hưởng hoạt chất, hoặc dùng chất hỗ trợ hòa tan, hoặc gạn lọc đúng kỹ thuật", "Đun sôi hỗn hợp đến khô", "Thêm muối ăn vào cho kết tủa chìm hẳn", "Đổ bỏ toàn bộ"],
+                correct: 0,
+                rationale: "Cần đánh giá xem tủa có chứa hoạt chất hay chỉ là tạp chất trơ để quyết định lọc bỏ hay giữ lại bằng chất phụ trợ."
+            },
+            {
+                topic: "hoa_tan",
+                question: "Thuốc thụt rửa (Enema) dạng dung dịch thường dùng qua đường nào?",
+                options: ["Đường trực tràng", "Đường uống qua miệng", "Đường nhỏ mũi", "Đường tiêm bắp"],
+                correct: 0,
+                rationale: "Thuốc thụt rửa là dung dịch lỏng đưa qua hậu môn trực tràng nhằm tác dụng tại chỗ hoặc toàn thân."
+            },
+
+            // --- KỸ THUẬT NGHIỀN TÁN, RÂY, TRỘN ĐỀU (Khoảng 30 câu) ---
+            {
+                topic: "nghien_tan",
+                question: "Khi sử dụng cối chày bằng thủy tinh trong phòng thí nghiệm, ta dùng để tán các chất nào?",
+                options: [
+                    "Chất có tính oxy hóa mạnh, chất ăn mòn, chất màu đậm dễ bám bẩn",
+                    "Chất là thảo mộc, động vật, khoáng vật cực cứng",
+                    "Chất cần có độ mòn cực cao như kim cương",
+                    "Chất hóa học thông thường không yêu cầu đặc biệt"
+                ],
+                correct: 0,
+                rationale: "Cối thủy tinh nhẵn, trơ, không bị ăn mòn bởi chất oxy hóa mạnh và dễ chùi rửa các chất màu."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Theo nguyên tắc trộn bột, khi trộn các bột có khối lượng chênh lệch nhiều nhau, ta áp dụng nguyên tắc gì?",
+                options: [
+                    "Nguyên tắc đồng lượng (trộn gấp đôi khối lượng tăng dần)",
+                    "Đổ chung toàn bộ vào cối khuấy 1 phút là xong",
+                    "Cho chất khối lượng lớn vào cối trước rồi đổ chất ít lên trên",
+                    "Hòa tan tất cả vào nước rồi phơi khô"
+                ],
+                correct: 0,
+                rationale: "Nguyên tắc đồng lượng giúp phân bố đều các chất có tỷ lệ nhỏ vào khối lượng lớn bột thuốc."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Theo Dược điển, cỡ bột thô có đặc điểm tỷ lệ qua rây như thế nào?",
+                options: [
+                    ">= 95% qua rây 1400 và <= 40% qua rây 355",
+                    "100% qua rây 125",
+                    "<= 10% bột không qua rây",
+                    "Tất cả các đáp án trên đều sai"
+                ],
+                correct: 0,
+                rationale: "Bột thô theo quy chuẩn Dược điển có kích thước tiểu phân quy định rõ qua các cỡ rây chuẩn."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Cối chày bằng mã não có ưu điểm nổi bật gì trong kỹ thuật bào chế?",
+                options: [
+                    "Cực kỳ cứng, nhẵn, không bị mài mòn, dùng để nghiền mịn các chất độc hoặc chất đòi hỏi độ mịn cao",
+                    "Làm bằng kim loại dễ gỉ sét",
+                    "Rất mềm và dễ vỡ vụn khi gõ nhẹ",
+                    "Có thể nung nóng ở 2000 độ C"
+                ],
+                correct: 0,
+                rationale: "Cối mã não rất cứng, chịu mài mòn tốt, không nhiễm tạp chất kim loại vào bột thuốc."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Phương pháp 'nghiền khô' kết hợp thêm một ít chất lỏng dễ bay hơi (như cồn, ether) để trợ nghiền các chất khó mịn gọi là gì?",
+                options: ["Nghiền ướt (hoặc nghiền với dung môi trung gian / nghiền hỗ trợ)", "Nghiền thô trực tiếp", "Nghiền bằng nhiệt độ cao", "Nghiền ly tâm"],
+                correct: 0,
+                rationale: "Nghiền với dung môi trung gian (nghiền ướt/hỗ trợ) giúp các chất dẻo hoặc khó nghiền (như camphor, menthol) tơi mịn dễ dàng."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Khi nghiền các chất dễ gây bùng nổ hoặc chất rất độc mạnh (như strychnin, atropin sulfat), người ta thường dùng kỹ thuật gì để tránh bụi bay?",
+                options: ["Nghiền lót cối bằng một chất bột trơ đã cho trước hoặc nghiền ướt", "Đứng trước quạt gió mạnh khi nghiền", "Đập mạnh chày liên tục thật nhanh", "Nghiền ở ngoài sân trời"],
+                correct: 0,
+                rationale: "Lót cối bằng một lượng chất bột trơ (như đường lactose) giúp giữ bột độc không bay hơi gây độc đường hô hấp."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Cỡ rây trong Dược điển Việt Nam được xác định bằng số hiệu rây, biểu thị điều gì?",
+                options: ["Số mắt rây trên chiều dài 1 inch (25.4 mm) hoặc kích thước lỗ rây tính bằng micromet (µm)", "Trọng lượng của khung rây tính bằng gram", "Đường kính ngoài cùng của rây tính bằng cm", "Số lượng lỗ rây trên toàn bộ mặt lưới"],
+                correct: 0,
+                rationale: "Số hiệu rây thể hiện kích thước lỗ rây hoặc số mắt rây chuẩn."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Bột mịn theo phân loại Dược điển là loại bột có cỡ tiểu phân chui qua rây có kích thước lỗ rây khoảng bao nhiêu?",
+                options: ["Rây 355 (kích thước lỗ rây 355 µm)", "Rây 1400", "Rây 125", "Rây 90"],
+                correct: 0,
+                rationale: "Bột mịn tương ứng với rây 355 theo quy chuẩn Dược điển."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Bột rất mịn có kích thước tiểu phân qua rây nào?",
+                options: ["Rây 125 hoặc rây 90", "Rây 2000", "Rây 1400", "Rây 500"],
+                correct: 0,
+                rationale: "Bột rất mịn siêu nhỏ qua rây 125 hoặc 90 µm, chuyên dùng cho thuốc tra mắt hoặc bột hít."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Máy nghiền nào thường dùng lực va đập tốc độ cao của các cánh búa quay để nghiền nhỏ dược liệu khô?",
+                options: ["Máy nghiền búa (Hammer mill)", "Máy nghiền bi xoay chậm", "Máy cán trục lăn ép phẳng", "Cối chày thủ công bằng tay"],
+                correct: 0,
+                rationale: "Máy nghiền búa dùng lực va đập cơ học mạnh mẽ để phá vỡ các khối dược liệu thành bột."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Máy nghiền bi (Ball mill) hoạt động dựa trên nguyên tắc cơ học nào?",
+                options: ["Lực va đập và lực mài mòn của các viên bi thép hoặc sứ lăn bên trong tang trống quay", "Lực cắt của các lưỡi dao sắc bén", "Lực nén thủy lực ép chặt", "Lực siêu âm tần số cao"],
+                correct: 0,
+                rationale: "Máy nghiền bi gồm tang trống chứa bi quay tròn, bi lăn va đập và mài mòn nguyên liệu thành bột mịn."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Thiết bị trộn bột hình chữ V (V-blender) hoặc hình lập phương ứng dụng nguyên tắc trộn nào?",
+                options: ["Trộn đảo dòng chảy tự do do trọng lực khi thùng quay lật úp", "Trộn bằng trục khuấy cánh xoắn tĩnh tại", "Trộn bằng sóng siêu âm", "Trộn bằng lực từ trường"],
+                correct: 0,
+                rationale: "Thùng trộn chữ V khi quay tạo ra dòng chảy chia cắt và sáp nhập các tiểu phân bột giúp trộn đều tuyệt vời."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Hiện tượng 'tách lớp' (segregation) trong khối bột thuốc trộn thường xảy ra do nguyên nhân gì?",
+                options: ["Sự chênh lệch về kích thước, hình dạng và tỷ trọng giữa các tiểu phân bột khi bị rung lắc", "Khối lượng bột quá ít", "Nhiệt độ phòng quá lạnh", "Độ ẩm không khí bằng 0%"],
+                correct: 0,
+                rationale: "Bột có sự chênh lệch lớn về kích thước hạt hoặc trọng lượng riêng rất dễ bị tách lớp (phân tầng) khi vận chuyển."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Thuốc bột uống sủi bọt thường chứa hỗn hợp thành phần phản ứng nào để tạo khí CO2 khi gặp nước?",
+                options: ["Acid hữu cơ (như acid citric, acid tartaric) và muối bicarbonat / carbonat", "Muối ăn và đường kính", "Tinh bột mì và nước cất", "Dầu dừa và xà phòng"],
+                correct: 0,
+                rationale: "Phản ứng giữa acid hữu cơ và natri bicarbonat trong nước sinh ra khí CO2 tạo bọt sủi."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Thuốc cốm (Granules) có ưu điểm gì vượt trội so với thuốc bột thông thường?",
+                options: ["Ít bị ẩm mốc hơn, ít bụi hơn, dễ đóng gói và tốc độ hòa tan đồng đều hơn", "Khó uống hơn và dễ bị bay hơi", "Không bao giờ tan trong nước", "Chỉ dùng để tiêm tĩnh mạch"],
+                correct: 0,
+                rationale: "Dạng cốm hạt lớn hơn bột nên giảm diện tích tiếp xúc với độ ẩm không khí, ít bay bụi, dễ uống."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Phương pháp điều chế thuốc cốm thông dụng trong công nghiệp là gì?",
+                options: ["Tạo hạt ướt (dùng dịch dính tạo khối ẩm rồi xát qua rây) hoặc tạo hạt khô", "Nấu chảy toàn bộ dược chất ở 500 độ C", "Trộn khô rồi ép thành viên gạch", "Nghiền mịn rồi đóng lọ ngay"],
+                correct: 0,
+                rationale: "Phương pháp tạo hạt ướt và tạo hạt khô là 2 kỹ thuật cốt lõi trong sản xuất cốm và viên nén."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Chất dính thường dùng trong kỹ thuật tạo hạt ướt thuốc cốm hoặc viên nén là gì?",
+                options: ["Hồ tinh bột, dung dịch gelatin, dung dịch PVP (polyvinylpyrrolidon), siro đơn", "Dầu hỏa hoặc xăng công nghiệp", "Muối ăn bão hòa", "Bột đá vôi"],
+                correct: 0,
+                rationale: "Dung dịch keo dính như PVP, hồ tinh bột giúp kết dính các tiểu phân bột thành hạt cốm chắc chắn."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Mục đích của việc sấy hạt cốm sau khi xát qua rây ẩm là gì?",
+                options: ["Làm khô, đưa độ ẩm của hạt về mức giới hạn cho phép (thường < 2-3%) để đảm bảo độ ổn định", "Làm cho hạt có màu vàng óng", "Làm cho hạt cứng như thép", "Làm bay hơi hoàn toàn hoạt chất"],
+                correct: 0,
+                rationale: "Sấy khô hạt cốm giúp bảo quản lâu dài, tránh ẩm mốc và biến chất."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Thuốc bột dùng ngoài da (như phấn rôm, thuốc bột rắc vết thương) yêu cầu kỹ thuật đặc biệt nào về độ mịn?",
+                options: ["Phải cực kỳ mịn (thường qua rây rất mịn), vô khuẩn đối với vết thương hở", "Có thể chứa các hạt sắc nhọn", "Độ ẩm lớn hơn 20%", "Có mùi hắc khó ngửi"],
+                correct: 0,
+                rationale: "Thuốc bột rắc vết thương bắt buộc phải tiệt khuẩn và đạt độ mịn cao để không gây kích ứng cơ học."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Khi trộn một lượng rất nhỏ hoạt chất màu vào khối lượng lớn bột trắng, để kiểm tra độ đồng đều màu sắc người ta làm thế nào?",
+                options: ["Quan sát sự đồng nhất màu sắc bằng mắt thường hoặc định lượng hàm lượng các mẫu lấy ở nhiều vị trí khác nhau", "Nếm thử vị ngọt của từng góc", "Đốt cháy mẫu xem có khói đen không", "Đo nhiệt độ khối bột"],
+                correct: 0,
+                rationale: "Kiểm tra độ đồng đều phân bố màu sắc và định lượng hoạt chất ở các điểm khác nhau trong máy trộn là chỉ tiêu GMP."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Thiết bị rây cơ học rung lắc (Sieve shaker) dùng để làm gì trong kiểm nghiệm và sản xuất?",
+                options: ["Đánh giá phân bố kích thước tiểu phân bột hoặc phân loại cỡ hạt theo tiêu chuẩn", "Nghiền nát các cục đá lớn", "Khuấy trộn dung dịch lỏng", "Ép viên nén tốc độ cao"],
+                correct: 0,
+                rationale: "Máy rây lắc tiêu chuẩn dùng để phân tích cỡ hạt bột thuốc trong phòng kiểm nghiệm."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Tá dược trơn (như magnesi stearat, talc) được trộn vào bột hạt với mục đích chính là gì?",
+                options: ["Giảm ma sát giữa hạt bột với thành cối chày / cối ép, giúp chảy trơn tru vào cối dập viên", "Làm tăng độ ngọt của thuốc", "Làm thuốc sủi bọt mạnh", "Làm tăng màu sắc rực rỡ"],
+                correct: 0,
+                rationale: "Tá dược trơn chống dính, điều hòa sự chảy của bột hạt trong quá trình dập viên."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Tá dược rã (như acid calsium carboxymethylcellulose, avicel, amidon) trong viên nén có tác dụng gì?",
+                options: ["Giúp viên nén hút nước, trương nở và rã nhanh thành các tiểu phân nhỏ khi tiếp xúc với dịch tiêu hóa", "Làm viên nén cứng như đá không bao giờ rã", "Làm viên nén chìm sâu xuống đáy cốc", "Làm viên có vị đắng"],
+                correct: 0,
+                rationale: "Tá dược rã đảm bảo viên nén rã nhanh chóng để phóng tan dược chất trong cơ thể."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Máy dập viên tâm sai (Single punch tablet press) hoạt động theo cơ chế nào?",
+                options: ["Dùng một chày trên và một chày dưới chuyển động lên xuống dập vào cối chứa bột cố định", "Dùng hàng trăm chày quay vòng tròn liên tục", "Dùng lực ép bằng tay gạt nhẹ", "Dùng dòng nước áp lực cao phun thành viên"],
+                correct: 0,
+                rationale: "Máy dập viên tâm sai dùng một chày đơn, thích hợp cho phòng thí nghiệm hoặc sản xuất quy mô nhỏ."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Máy dập viên quay tròn (Rotary tablet press) có ưu điểm gì so với máy tâm sai?",
+                options: ["Năng suất cực kỳ cao, nhiều chày cùng hoạt động đồng thời trên mâm quay", "Chỉ dập được 1 viên mỗi giờ", "Cấu tạo thủ công bằng gỗ", "Không cần dùng động cơ điện"],
+                correct: 0,
+                rationale: "Máy dập viên quay tròn có nhiều bộ chày cối trên mâm quay, đáp ứng năng suất công nghiệp lớn."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Chỉ tiêu kiểm tra cơ lý nào sau đây KHÔNG bắt buộc đối với viên nén thành phẩm?",
+                options: ["Độ rã, độ mài mòn, độ cứng, độ đồng đều khối lượng, độ đồng đều hàm lượng", "Màu sắc của bao bì hộp giấy bên ngoài cùng", "Hàm lượng hoạt chất chính", "Độ hòa tan"],
+                correct: 1,
+                rationale: "Màu sắc vỏ hộp ngoài không phải chỉ tiêu kiểm tra cơ lý dược động học của viên nén."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Thử độ mài mòn của viên nén (Friability test) thường được thực hiện bằng thiết bị gì?",
+                options: ["Lồng quay định chuẩn (Friabilator) quay với tốc độ và số vòng quy định", "Búa tạ đập trực tiếp", "Ngâm vào nước sôi 100 độ C", "Đo bằng quang phổ kế UV-Vis"],
+                correct: 0,
+                rationale: "Thiết bị thử độ mài mòn cho viên quay trong lồng chịu va đập để đo độ bền cơ học chống vỡ vụn."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Phương pháp bao viên đường (Sugar coating) truyền thống trải qua các công đoạn chính nào theo thứ tự?",
+                options: ["Bao cách ly -> Bao nền (tạo hình) -> Bao nhẵn -> Bao màu -> Bao bóng (đánh bóng)", "Bao màu ngay lập tức rồi sấy khô", "Ép nhựa dẻo bên ngoài", "Nhúng trực tiếp vào nước sôi"],
+                correct: 0,
+                rationale: "Quy trình bao đường truyền thống gồm nhiều bước công phu: cách ly, tạo nền, làm nhẵn, nhuộm màu và đánh bóng."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Ưu điểm của phương pháp bao màng mỏng polymer (Film coating) so với bao đường truyền thống là gì?",
+                options: ["Thời gian bao nhanh hơn, lớp màng mỏng nhẹ không làm tăng khối lượng viên quá nhiều, giữ nguyên hình dạng khắc chữ", "Làm viên nặng gấp 3 lần ban đầu", "Làm viên có vị ngọt đậm đặc", "Không cần máy móc phức tạp"],
+                correct: 0,
+                rationale: "Bao màng phim hiện đại nhanh gọn, mỏng nhẹ, giữ nguyên sắc nét logo hoặc chữ khắc trên viên nén."
+            },
+            {
+                topic: "nghien_tan",
+                question: "Viên nén bao tan ở ruột (Enteric coated tablet) có mục đích bảo vệ dược chất tránh điều kiện gì?",
+                options: ["Bị phá hủy bởi acid dịch vị dạ dày hoặc tránh kích ứng niêm mạc dạ dày", "Bị đông đá trong ruột non", "Bị bay hơi qua đường hô hấp", "Bị biến thành chất ngọt"],
+                correct: 0,
+                rationale: "Lớp bao tan ở ruột kháng acid dạ dày, chỉ tan khi xuống môi trường kiềm nhẹ ở ruột non."
+            },
+
+            // --- ĐẠI CƯƠNG SINH DƯỢC HỌC (Khoảng 30 câu) ---
+            {
+                topic: "sinh_duoc",
+                question: "Sinh khả dụng (Bioavailability - F) của thuốc phản ánh điều gì?",
+                options: [
+                    "Tốc độ và mức độ hấp thu hoạt chất vào tuần hoàn chung và sẵn sàng phát huy tác dụng ở nơi tác động",
+                    "Thời gian bán thải của thuốc trong tế bào gan",
+                    "Độ bền cơ học của viên nén khi thử độ mài mòn",
+                    "Khả năng chịu nhiệt khi tiệt khuẩn sản phẩm"
+                ],
+                correct: 0,
+                rationale: "Sinh khả dụng F biểu thị tốc độ và mức độ dược chất xâm nhập vào vòng tuần hoàn toàn thân."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Theo thứ tự chung, sinh khả dụng của các dạng bào chế qua đường uống có khuynh hướng giảm dần theo chiều nào?",
+                options: ["Dung dịch nước > Hỗn dịch nước > Nang mềm/Nang cứng > Viên nén > Viên bao", "Viên bao > Viên nén > Dung dịch nước", "Nang thuốc > Viên bao > Dung dịch nước", "Viên nén > Dung dịch nước > Hỗn dịch nước"],
+                correct: 0,
+                rationale: "Dung dịch không mất công rã hòa tan nên có sinh khả dụng cao nhất, tiếp theo đến hỗn dịch, nang và viên nén."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Thế nào là hai chế phẩm tương đương sinh học (Bioequivalence)?",
+                options: [
+                    "Là các chế phẩm tương đương dược phẩm có các thông số dược động học (Cmax, tmax, AUC) không khác biệt có ý nghĩa thống kê",
+                    "Là các chế phẩm có cùng màu sắc và hình dạng bên ngoài",
+                    "Là các thuốc chứa hoạt chất hoàn toàn khác nhau cùng nhóm điều trị",
+                    "Là thuốc tự pha chế không cần kiểm định"
+                ],
+                correct: 0,
+                rationale: "Tương đương sinh học đòi hỏi sự tương đương về tốc độ và mức độ hấp thu (AUC, Cmax, tmax)."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Diện tích dưới đường cong nồng độ thuốc trong máu theo thời gian (AUC) biểu thị điều gì?",
+                options: [
+                    "Tổng lượng dược chất hấp thu vào tuần hoàn chung trong suốt quá trình",
+                    "Tốc độ tối đa thuốc đạt đỉnh",
+                    "Thời gian thuốc bắt đầu có tác dụng",
+                    "Độ tan tuyệt đối của thuốc trong nước"
+                ],
+                correct: 0,
+                rationale: "AUC (Area Under Curve) phản ánh tổng lượng thuốc hấp thu vào máu."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Thông số Cmax trong dược động học có ý nghĩa gì?",
+                options: ["Nồng độ đỉnh của thuốc đạt được trong máu", "Thời gian đạt nồng độ đỉnh", "Thể tích phân bố của thuốc", "Tốc độ thải trừ qua thận"],
+                correct: 0,
+                rationale: "Cmax là nồng độ tối đa mà dược chất đạt được trong huyết tương sau khi dùng thuốc."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Thông số tmax là gì?",
+                options: ["Thời gian cần thiết để thuốc đạt nồng độ đỉnh (Cmax) trong máu kể từ khi sử dụng", "Thời gian bán thải của thuốc", "Thời gian thuốc tồn tại trong dạ dày", "Thời gian tiêm thuốc"],
+                correct: 0,
+                rationale: "tmax là thời điểm ghi nhận nồng độ thuốc đạt đỉnh Cmax."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Hiệu ứng vượt qua lần đầu ở gan (First-pass effect) xảy ra chủ yếu đối với đường dùng thuốc nào?",
+                options: ["Đường uống qua đường tiêu hóa (gồm tĩnh mạch cửa về gan)", "Đường tiêm tĩnh mạch trực tiếp", "Đường ngậm dưới lưỡi", "Đường hít qua phổi"],
+                correct: 0,
+                rationale: "Thuốc uống hấp thu qua ruột theo hệ tĩnh mạch cửa đi qua gan trước khi vào tim, chịu chuyển hóa mạnh lần đầu ở gan."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Đường dùng thuốc nào đạt sinh khả dụng tuyệt đối F = 100%?",
+                options: ["Tiêm tĩnh mạch (Intravenous - IV)", "Đường uống", "Đường bôi da", "Đường đặt trực tràng"],
+                correct: 0,
+                rationale: "Tiêm tĩnh mạch đưa trực tiếp hoàn toàn dược chất vào máu nên sinh khả dụng xem như tuyệt đối 100%."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Sự hấp thu dược chất qua màng sinh học tế bào theo cơ chế 'khuếch tán thụ động' phụ thuộc vào yếu tố nào?",
+                options: ["Hệ số phân bố dầu/nước của dược chất, diện tích hấp thu và độ chênh lệch nồng độ", "Cần tiêu tốn năng lượng ATP của cơ thể", "Nhờ chất mang vận chuyển chủ động ngược chiều nồng độ", "Phụ thuộc hoàn toàn vào ý muốn bệnh nhân"],
+                correct: 0,
+                rationale: "Khuếch tán thụ động tuân theo định luật Fick, phụ thuộc tính thấm màng, độ chênh lệch nồng độ và hệ số phân bố dầu/nước."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Dược chất có tính acid yếu khi vào môi trường pH acid của dạ dày sẽ ở dạng nào nhiều hơn?",
+                options: [
+                    "Dạng không ion hóa (dễ thấm qua màng lipid tế bào niêm mạc dạ dày)",
+                    "Dạng phân cực ion hóa mạnh",
+                    "Dạng kết tủa hoàn toàn thành sỏi",
+                    "Dạng bay hơi thành khí"
+                ],
+                correct: 0,
+                rationale: "Acid yếu ở môi trường pH acid ít bị ly giải ion hóa, tồn tại dạng không ion hóa dễ tan trong lipid màng để hấp thu."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Yếu tố sinh dược học nào thuộc về 'bản chất dược chất' ảnh hưởng đến sinh khả dụng?",
+                options: ["Kích thước tiểu phân, dạng hình thù tinh thể (polymorphism), độ tan, hệ số phân bố", "Màu sắc vỏ hộp thuốc", "Tên thương mại của nhà thuốc", "Giá tiền của viên thuốc"],
+                correct: 0,
+                rationale: "Đặc tính lý hóa nguyên liệu như hình thù tinh thể, kích thước hạt, độ tan chi phối mạnh mẽ quá trình hấp thu."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Hiện tượng đa hình (Polymorphism) của dược chất rắn ảnh hưởng như thế nào đến thuốc?",
+                options: ["Các dạng thù hình tinh thể khác nhau có độ tan, tốc độ hòa tan và sinh khả dụng khác nhau", "Không có bất kỳ ảnh hưởng nào đến cơ thể", "Làm thay đổi hoàn toàn tên gọi hóa học", "Làm viên thuốc tự bốc cháy"],
+                correct: 0,
+                rationale: "Dạng thù hình metastable thường có độ tan và tốc độ hòa tan cao hơn dạng thù hình bền vững ổn định."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Tương tác sinh dược học xảy ra ở giai đoạn nào trước khi thuốc được hấp thu vào máu?",
+                options: ["Ngay trong ống tiêu hóa hoặc tại vị trí dùng thuốc (ví dụ tạo phức tủa không hấp thu được)", "Sau khi thuốc đã vào trong não", "Khi thuốc thải trừ qua nước tiểu ở thận", "Trong huyết tương mạch máu"],
+                correct: 0,
+                rationale: "Tương tác sinh dược học diễn ra bên ngoài cơ thể hoặc tại chỗ hấp thu (như tủa, hấp phụ lẫn nhau trong ống tiêu hóa)."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Thức ăn trong dạ dày thường ảnh hưởng như thế nào đến tốc độ hấp thu của phần lớn các thuốc uống thông thường?",
+                options: ["Thường làm chậm tốc độ rỗng dạ dày, làm chậm quá trình hấp thu thuốc (làm tmax kéo dài)", "Luôn làm tăng sinh khả dụng lên 500%", "Không làm thay đổi thời gian hấp thu", "Làm thuốc bốc hơi lập tức"],
+                correct: 0,
+                rationale: "Thức ăn cản trở sự di chuyển và làm chậm rỗng dạ dày, khiến thuốc xuống ruột muộn hơn."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Sinh dược học bào chế quan tâm nghiên cứu mối quan hệ giữa yếu tố nào?",
+                options: ["Đặc tính lý hóa của dược chất, kỹ thuật bào chế, dạng bào chế và sinh khả dụng lâm sàng của thuốc", "Giá thành sản xuất và lợi nhuận nhà thuốc", "Màu sắc bao bì và sở thích bệnh nhân", "Thời gian vận chuyển hàng hóa"],
+                correct: 0,
+                rationale: "Sinh dược học bào chế gắn kết chặt chẽ công nghệ bào chế với hiệu quả điều trị thực tế trên cơ thể."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Ý nghĩa thực tiễn quan trọng nhất của sinh dược học là gì?",
+                options: ["Thiết kế và tối ưu hóa dạng bào chế giúp thuốc phát huy hiệu quả điều trị cao nhất và an toàn nhất", "Giúp sản xuất các loại thuốc giả tinh vi", "Làm giảm tác dụng của thuốc xuống mức thấp nhất", "Tăng chi phí nghiên cứu không cần thiết"],
+                correct: 0,
+                rationale: "Nghiên cứu sinh dược học giúp cải tiến, tối ưu hóa công thức và dạng bào chế đạt hiệu quả tối ưu."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Đường dùng thuốc qua da (Transdermal therapeutic system - TTS) có ưu điểm sinh dược học gì nổi bật?",
+                options: ["Duy trì nồng độ thuốc ổn định kéo dài trong máu, tránh hiệu ứng vượt qua lần đầu ở gan", "Tác dụng cực nhanh trong vòng 1 giây", "Gây sốc phản vệ ngay lập tức", "Chỉ dùng để chữa bệnh ngoài da tại chỗ"],
+                correct: 0,
+                rationale: "Hệ thống dán qua da giải phóng dược chất từ từ, duy trì nồng độ hằng định trong máu và tránh chuyển hóa qua gan."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Dạng thuốc giải phóng kéo dài (Extended release - ER / SR) nhằm mục đích gì?",
+                options: ["Giảm số lần dùng thuốc trong ngày, duy trì nồng độ điều trị ổn định và giảm tác dụng không mong muốn", "Làm thuốc hết tác dụng ngay lập tức sau 5 phút", "Làm tăng độc tính của thuốc lên gấp đôi", "Làm giá thành thuốc rẻ đi 10 lần"],
+                correct: 0,
+                rationale: "Giải phóng kéo dài giúp duy trì nồng độ trong khoảng cửa sổ điều trị, hạn chế dao động đỉnh đáy."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Cửa sổ điều trị của thuốc là gì?",
+                options: ["Khoảng nồng độ thuốc trong máu nằm giữa ngưỡng có tác dụng điều trị tối thiểu và ngưỡng gây độc", "Cửa sổ phòng thí nghiệm sản xuất thuốc", "Thời gian bảo quản thuốc trong kho lạnh", "Khoảng cách từ nhà máy đến nhà thuốc"],
+                correct: 0,
+                rationale: "Cửa sổ điều trị là khoảng an toàn hiệu quả giữa liều gây độc và liều tối thiểu có tác dụng."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Thuốc có khoảng cửa sổ điều trị hẹp đòi hỏi điều gì khi bào chế và sử dụng?",
+                options: ["Phải kiểm soát tốc độ giải phóng cực kỳ chính xác để tránh ngộ độc hoặc mất hiệu quả", "Có thể uống tùy ý không cần liều lượng", "Không cần kiểm tra chất lượng", "Pha loãng bao nhiêu cũng được"],
+                correct: 0,
+                rationale: "Hoạt chất khoảng trị liệu hẹp (như digoxin, theophylin) cần dạng bào chế giải phóng kiểm soát chặt chẽ."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Tốc độ rỗng dạ dày nhanh hay chậm chịu ảnh hưởng lớn bởi yếu tố nào của thức ăn?",
+                options: ["Thành phần chất béo và thể tích bữa ăn (bức ăn nhiều dầu mỡ làm chậm rỗng dạ dày)", "Màu sắc của thức ăn", "Âm thanh xung quanh khi ăn", "Thời tiết ngoài trời"],
+                correct: 0,
+                rationale: "Bữa ăn giàu chất béo kích thích tiết hormone làm chậm sự tháo rỗng của dạ dày."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "pH tại ruột non (đoạn đầu tá tràng và hỗng tràng) có đặc tính gì?",
+                options: ["Hơi acid nhẹ đến trung tính kiềm (pH từ khoảng 5.5 đến 7.5)", "Acid đặc đậm đặc như dạ dày", "Kiềm mạnh ăn mòn kim loại", "Tuyệt đối trung tính pH = 7.0 chính xác"],
+                correct: 0,
+                rationale: "Ruột non có môi trường pH tăng dần từ acid nhẹ ở tá tràng lên trung tính/kiềm nhẹ ở hỗng tràng, hồi tràng."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Các enzym chuyển hóa chủ yếu tham gia vào hiệu ứng vượt qua lần đầu ở gan nằm ở đâu?",
+                options: ["Hệ thống cytochrom P450 (CYP450) trong tế bào biểu mô gan và ruột", "Trong hồng cầu máu", "Ở lớp da bên ngoài", "Ở nước bọt tuyến mang tai"],
+                correct: 0,
+                rationale: "Hệ enzym CYP450 ở gan và ruột chịu trách nhiệm chuyển hóa phần lớn dược chất."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Hiện tượng tương tác thuốc do cảm ứng enzym gan (ví dụ rifampicin làm tăng chuyển hóa thuốc khác) sẽ dẫn đến kết quả gì?",
+                options: ["Làm giảm nồng độ và giảm tác dụng điều trị của thuốc dùng chung", "Làm tăng độc tính tử vong ngay lập tức", "Không ảnh hưởng gì", "Làm thuốc biến mất khỏi cơ thể"],
+                correct: 0,
+                rationale: "Cảm ứng enzym đẩy nhanh tốc độ thanh thải thuốc, làm giảm nồng độ thuốc trong máu."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Hiện tượng ức chế enzym gan (ví dụ ketoconazol ức chế chuyển hóa) dẫn đến hậu quả gì?",
+                options: ["Làm tăng nồng độ thuốc dùng chung trong máu, dễ dẫn đến nguy cơ ngộ độc quá liều", "Làm thuốc mất tác dụng hoàn toàn", "Làm tăng tốc độ bài tiết qua thận lên 100 lần", "Không có ý nghĩa lâm sàng"],
+                correct: 0,
+                rationale: "Ức chế enzym làm chậm chuyển hóa thuốc, tích lũy nồng độ cao gây độc tính."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Thể tích phân bố (Volume of distribution - Vd) phản ánh điều gì về dược chất?",
+                options: ["Mức độ phân bố của thuốc vào các mô và dịch trong cơ thể so với huyết tương", "Thể tích của viên thuốc", "Thể tích bình pha chế dung dịch", "Thể tích nước tiểu trong 24 giờ"],
+                correct: 0,
+                rationale: "Vd thể hiện mức độ khuếch tán của thuốc vào các tổ chức mô trong cơ thể."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Độ thanh thải (Clearance - Cl) của thuốc là gì?",
+                options: ["Thể tích huyết tương hoặc máu được cơ thể loại bỏ sạch hoàn toàn thuốc trong một đơn vị thời gian", "Tốc độ pha chế thuốc trong nhà máy", "Thời gian sấy khô hạt cốm", "Lượng bã dược liệu sau khi lọc"],
+                correct: 0,
+                rationale: "Cl biểu thị hiệu suất thanh lọc thuốc của cơ thể qua gan, thận và các cơ quan bài tiết."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Thời gian bán thải (Half-life - t1/2) của thuốc là khoảng thời gian để:",
+                options: ["Nồng độ thuốc trong huyết tương giảm đi một nửa so với ban đầu", "Thuốc hấp thu hoàn toàn 100%", "Thuốc bắt đầu có tác dụng", "Viên thuốc rã trong dạ dày"],
+                correct: 0,
+                rationale: "t1/2 là thời gian cần thiết để nồng độ dược chất trong máu giảm xuống còn 50%."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Hệ thống phân phối thuốc đích (Targeted drug delivery systems) như liposome, nanoparticle nhằm mục đích sinh dược học gì?",
+                options: ["Đưa dược chất tập trung tối đa vào mô bệnh (như khối u) mà hạn chế phân bố ở mô lành, giảm tác dụng phụ", "Làm thuốc bay hơi nhanh vào không khí", "Làm tăng giá thành sản phẩm giả", "Làm mất hoàn toàn tác dụng của thuốc"],
+                correct: 0,
+                rationale: "Hệ thống mang thuốc thông minh hướng đích giúp tập trung trúng đích bệnh lý, giảm độc tính tế bào lành."
+            },
+            {
+                topic: "sinh_duoc",
+                question: "Dạng thuốc cấy dưới da (Implants) có đặc điểm sinh dược học giải phóng dược chất như thế nào?",
+                options: ["Giải phóng cực kỳ chậm kéo dài hàng tháng hoặc hàng năm (ví dụ thuốc tránh thai cấy dưới da)", "Phóng thích toàn bộ liều ngay trong 1 giây", "Chỉ tác dụng khi tiếp xúc với ánh nắng", "Tan rã hoàn toàn sau 5 phút"],
+                correct: 0,
+                rationale: "Dạng cấy dưới da là hệ thống giải phóng kéo dài siêu chậm trong thời gian dài."
+            },
+
+            // --- KỸ THUẬT ĐO ĐỘ CỒN - PHA CỒN (Khoảng 30 câu) ---
+            {
+                topic: "do_con",
+                question: "Độ cồn thực (ký hiệu T) là gì theo định nghĩa chuyên ngành?",
+                options: [
+                    "Độ cồn của dung dịch được đo bằng cồn kế ở nhiệt độ chuẩn 15 độ C",
+                    "Độ cồn đọc trực tiếp trên cồn kế ở bất kỳ nhiệt độ phòng nào",
+                    "Tỷ lệ phần trăm thể tích nước nguyên chất",
+                    "Khối lượng ethanol nguyên chất trong 1 kg dung dịch"
+                ],
+                correct: 0,
+                rationale: "Độ cồn thực (T) là độ cồn quy chiếu chính xác ở nhiệt độ chuẩn 15 độ C."
+            },
+            {
+                topic: "do_con",
+                question: "Độ cồn biểu kiến (ký hiệu B) là gì?",
+                options: [
+                    "Độ cồn đọc được trực tiếp trên cồn kế tại nhiệt độ thực tế của phòng thí nghiệm (khác 15 độ C)",
+                    "Độ cồn sau khi đã tính toán hiệu chỉnh nhiệt độ chuẩn",
+                    "Độ cồn tuyệt đối 100 độ",
+                    "Trọng lượng riêng của cồn"
+                ],
+                correct: 0,
+                rationale: "Độ cồn biểu kiến (B) là số đo trực tiếp trên cồn kế ở nhiệt độ đo thực tế chưa hiệu chỉnh."
+            },
+            {
+                topic: "do_con",
+                question: "Khi đo độ cồn biểu kiến B < 56 độ ở nhiệt độ t độ C, công thức quy đổi tính độ cồn thực T là gì?",
+                options: [
+                    "T = B - 0,4 (t - 15)",
+                    "T = B + 0,4 (t - 15)",
+                    "T = B - 0,5 (15 - t)",
+                    "T = B x (15 / t)"
+                ],
+                correct: 0,
+                rationale: "Công thức hiệu chỉnh chuẩn cho cồn có độ biểu kiến dưới 56 độ khi nhiệt độ t khác 15 độ C."
+            },
+            {
+                topic: "do_con",
+                question: "Khi đo độ cồn biểu kiến B >= 56 độ ở nhiệt độ t độ C, công thức hiệu chỉnh tính độ cồn thực T thường dùng là gì?",
+                options: [
+                    "T = B - 0,38 (t - 15) hoặc hệ số tương đương theo bảng tra Dược điển",
+                    "T = B + 2 (t - 15)",
+                    "T = B x 2",
+                    "T = B / 2"
+                ],
+                correct: 0,
+                rationale: "Đối với cồn có độ cao (>= 56 độ), hệ số hiệu chỉnh nhiệt độ thay đổi khoảng 0.38 hoặc tra bảng tra chuyên dụng trong Dược điển."
+            },
+            {
+                topic: "do_con",
+                question: "Cồn kế Gay-Lussac biểu thị độ cồn theo đơn vị nào?",
+                options: [
+                    "Phần trăm thể tích (% V/V) ethanol nguyên chất ở 15 độ C",
+                    "Phần trăm khối lượng (% m/m)",
+                    "Số mol ethanol trên 1 lít nước",
+                    "Độ Celsius (°C)"
+                ],
+                correct: 0,
+                rationale: "Cồn kế Gay-Lussac đo phần trăm thể tích cồn ở 15 độ C."
+            },
+            {
+                topic: "do_con",
+                question: "Để pha 300ml cồn 60 độ từ cồn 90 độ (coi độ thực bằng biểu kiến), thể tích cồn 90 độ cần lấy là bao nhiêu?",
+                options: ["200 ml", "150 ml", "250 ml", "100 ml"],
+                correct: 0,
+                rationale: "Áp dụng công thức V1 x T1 = V2 x T2 => V1 = (300 x 60) / 90 = 200 ml."
+            },
+            {
+                topic: "do_con",
+                question: "Nguyên lý hoạt động của cồn kế dựa trên định luật vật lý nào?",
+                options: ["Định luật Archimedes về lực đẩy của chất lỏng lên vật thể nổi", "Định luật khúc xạ ánh sáng Snell", "Định luật bảo toàn khối lượng Lavoisier", "Định luật vạn vật hấp dẫn Newton"],
+                correct: 0,
+                rationale: "Cồn kế chìm nổi trong dung dịch cồn dựa trên lực đẩy Archimedes tương ứng với tỷ trọng dung dịch."
+            },
+            {
+                topic: "do_con",
+                question: "Tại sao khi đọc vạch trên cồn kế trong ống đong thủy tinh, người ta phải nhìn ngang mặt khum của chất lỏng?",
+                options: ["Để tránh sai số do thị sai (parallax error)", "Để nhìn rõ màu sắc cồn", "Để cồn không bay hơi vào mắt", "Vì quy định bắt buộc phải nhìn từ trên xuống"],
+                correct: 0,
+                rationale: "Nhìn ngang mặt khum chất lỏng giúp đọc chính xác vạch chia độ trên cồn kế, tránh sai số do góc nhìn."
+            },
+            {
+                topic: "do_con",
+                question: "Cồn tuyệt đối (Ethanol absolute) theo Dược điển có độ cồn thực tối thiểu là bao nhiêu?",
+                options: ["Khoảng 99.5% đến 99.9% V/V", "90%", "70%", "50%"],
+                correct: 0,
+                rationale: "Cồn tuyệt đối chứa hàm lượng ethanol rất cao, gần như không chứa nước (>99.5%)."
+            },
+            {
+                topic: "do_con",
+                question: "Cồn 70 độ (70% V/V) được sử dụng phổ biến nhất trong y tế với mục đích gì?",
+                options: ["Sát khuẩn da, dụng cụ, tay y tế nhờ khả năng thẩm thấu qua màng tế bào vi khuẩn tối ưu", "Uống giải khát hàng ngày", "Làm dung môi pha sơn dầu công nghiệp", "Đốt cháy làm nhiên liệu động cơ ô tô"],
+                correct: 0,
+                rationale: "Cồn 70 độ có tốc độ thẩm thấu và làm biến tính protein vi khuẩn tốt nhất so với cồn 90 độ nguyên chất."
+            },
+            {
+                topic: "do_con",
+                question: "Tại sao cồn 90 độ lại sát khuẩn kém hiệu quả hơn cồn 70 độ đối với vi khuẩn?",
+                options: ["Cồn 90 độ làm đông cứng vách protein vi khuẩn quá nhanh ngay từ ngoài, tạo lớp màng ngăn cồn thấm sâu vào bên trong tế bào", "Cồn 90 độ quá loãng không có tác dụng", "Cồn 90 độ bị bay hơi chậm hơn nước", "Cồn 90 độ ăn mòn da tay"],
+                correct: 0,
+                rationale: "Cồn 90 độ làm đông protein vỏ ngoài quá nhanh gây cản trở cồn thâm nhập tiêu diệt hoàn toàn vi khuẩn."
+            },
+            {
+                topic: "do_con",
+                question: "Khi pha cồn có nồng độ cao xuống nồng độ thấp từ cồn nguyên chất và nước cất, tại sao phải để dung dịch nguội rồi mới định mức chính xác?",
+                options: ["Phản ứng trộn lẫn ethanol và nước tỏa nhiệt, thể tích dung dịch bị thay đổi theo nhiệt độ, cần đo khi ở nhiệt độ phòng", "Để cồn bay hơi bớt cho nhẹ", "Vì nước cất rất lạnh", "Để cồn chuyển thành màu xanh"],
+                correct: 0,
+                rationale: "Pha cồn tỏa nhiệt làm thay đổi thể tích tạm thời, cần để nguội về nhiệt độ chuẩn mới định mức thể tích chính xác."
+            },
+            {
+                topic: "do_con",
+                question: "Bảng tra Mendeleev trong Dược điển dùng để làm gì liên quan đến kỹ thuật cồn?",
+                options: ["Tra cứu tỷ trọng của dung dịch cồn tương ứng với độ cồn thực hoặc tra cứu lượng nước và cồn cần pha", "Tra cứu nhiệt độ sôi của nước", "Tra cứu độ tan của muối ăn trong dầu", "Tra cứu hàm lượng vitamin C"],
+                correct: 0,
+                rationale: "Bảng Mendeleev là bảng tra cứu chuẩn tỷ trọng và độ cồn trong chuyên luận cồn."
+            },
+            {
+                topic: "do_con",
+                question: "Khi cần pha V (ml) cồn có độ cồn T2 từ cồn có độ cồn cao T1, ta áp dụng công thức pha chế nào?",
+                options: ["V1 = (V2 x T2) / T1 với V1 là thể tích cồn đậm đặc cần lấy", "V1 = V2 + T1 - T2", "V1 = T1 x T2 x V2", "V1 = V2 / (T1 x T2)"],
+                correct: 0,
+                rationale: "Công thức bảo toàn lượng chất tan tuyệt đối: V1.T1 = V2.T2."
+            },
+            {
+                topic: "do_con",
+                question: "Pyknometer (Bình tỷ trọng) dùng để xác định độ cồn bằng phương pháp nào?",
+                options: ["Xác định khối lượng riêng / tỷ trọng của dung dịch cồn rồi tra bảng quy đổi ra độ cồn", "Đo thể tích bằng ống đong nhựa", "Đo độ pH bằng điện cực thủy tinh", "Đo độ nhớt bằng nhớt kế Ostwald"],
+                correct: 0,
+                rationale: "Bình pyknometer cân chính xác trọng lượng thể tích cố định giúp tính tỷ trọng d từ đó suy ra độ cồn cực kỳ chính xác."
+            },
+            {
+                topic: "do_con",
+                question: "Đặc tính lý hóa nào của ethanol làm cho nó trở thành dung môi tuyệt vời trong chiết xuất dược liệu?",
+                options: ["Vừa phân cực (nhóm -OH) vừa không phân cực (gốc hydrocarbon -C2H5), hòa tan được nhiều nhóm hoạt chất khác nhau", "Chỉ hòa tan duy nhất nước tinh khiết", "Hoàn toàn không tan trong bất kỳ chất gì", "Có tính axit mạnh như acid sulfuric"],
+                correct: 0,
+                rationale: "Ethanol là dung môi lưỡng cực, hòa tan tốt cả chất phân cực và kém phân cực (như alkaloid base, glycosid, tinh dầu...)."
+            },
+            {
+                topic: "do_con",
+                question: "Cồn thuốc (Tinctures) thường được điều chế bằng phương pháp nào từ dược liệu?",
+                options: ["Phương pháp ngâm lạnh, ngấm kiệt hoặc hòa tan cao thuốc", "Phương pháp nung chảy ở 500 độ C", "Phương pháp ép thủy lực khô", "Phương pháp ly tâm siêu tốc"],
+                correct: 0,
+                rationale: "Cồn thuốc là chế phẩm lỏng chiết xuất từ dược liệu bằng cồn với các phương pháp ngâm, ngấm kiệt."
+            },
+            {
+                topic: "do_con",
+                question: "Tỷ lệ dược liệu trong cồn thuốc thông dụng thường quy định như thế nào đối với dược liệu độc và dược liệu thường?",
+                options: ["1 phần dược liệu độc ứng với 10 phần cồn thuốc; dược liệu thường là 1 phần dược liệu ứng với 5 phần cồn thuốc", "1 phần dược liệu ứng với 100 phần cồn", "Tất cả các loại đều đúng tỷ lệ 1:1", "Không quy định tỷ lệ"],
+                correct: 0,
+                rationale: "Quy chuẩn Dược điển quy định tỷ lệ pha chế cồn thuốc chuẩn: dược liệu độc tỷ lệ 1:10, dược liệu thường tỷ lệ 1:5."
+            },
+            {
+                topic: "do_con",
+                question: "Rượu thuốc khác với cồn thuốc ở điểm cơ bản nào?",
+                options: ["Rượu thuốc thường pha chế bằng phương pháp ngâm dược liệu với rượu thực phẩm (hoặc cồn độ thấp) theo kinh nghiệm dân gian hoặc công thức cổ truyền, không bắt buộc tuân thủ ngặt nghèo tỷ lệ chuẩn như cồn thuốc", "Rượu thuốc dùng để tiêm tĩnh mạch", "Rượu thuốc không chứa cồn", "Rượu thuốc bắt buộc phải có kháng sinh tổng hợp"],
+                correct: 0,
+                rationale: "Rượu thuốc là dạng thuốc cổ truyền ngâm dược liệu với rượu, trong khi cồn thuốc là chế phẩm dược chính quy theo Dược điển."
+            },
+            {
+                topic: "do_con",
+                question: "Khi bảo quản các dung dịch cồn thuốc và cồn y tế, cần chú ý điều kiện đặc biệt gì?",
+                options: ["Đựng trong chai lọ kín, để nơi khô mát, tránh lửa, tránh ánh sáng trực tiếp vì cồn dễ bay hơi và dễ cháy nổ", "Để gần nguồn lửa để dễ kiểm tra", "Mở nắp thoáng hoàn toàn để cồn thở", "Bảo quản trong tủ đá -20 độ C"],
+                correct: 0,
+                rationale: "Ethanol dễ bay hơi, dễ bắt lửa nên phải bảo quản trong bao bì kín, nơi thoáng mát, xa nguồn nhiệt."
+            }
+        ];
+
+        let currentQuizQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function startQuiz() {
+            const topic = document.getElementById('topic-select').value;
+            const countSelect = document.getElementById('count-select').value;
+
+            let filtered = topic === 'all' 
+                ? [...questionBank] 
+                : questionBank.filter(q => q.topic === topic);
+
+            // Shuffle pool
+            filtered.sort(() => Math.random() - 0.5);
+            
+            let count = countSelect === '150' ? filtered.length : parseInt(countSelect);
+            currentQuizQuestions = filtered.slice(0, Math.min(count, filtered.length));
+
+            if (currentQuizQuestions.length === 0) {
+                alert("Không đủ câu hỏi cho chủ đề này!");
+                return;
+            }
+
+            currentIndex = 0;
+            score = 0;
+
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('quiz-screen').classList.remove('hidden');
+
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('explanation-container').classList.add('hidden');
+
+            const q = currentQuizQuestions[currentIndex];
+            document.getElementById('question-tracker').innerText = `Câu ${currentIndex + 1} / ${currentQuizQuestions.length}`;
+            document.getElementById('score-tracker').innerText = `Đúng: ${score}`;
+            document.getElementById('question-container').innerHTML = `<h3 class="text-lg font-semibold text-slate-800">${q.question}</h3>`;
+
+            // Randomize options
+            let optionsWithIndex = q.options.map((opt, idx) => ({ text: opt, originalIdx: idx }));
+            optionsWithIndex.sort(() => Math.random() - 0.5);
+
+            let optionsHtml = '';
+            optionsWithIndex.forEach((item) => {
+                optionsHtml += `
+                    <button onclick="selectAnswer(${item.originalIdx}, ${q.correct}, this)" 
+                        class="option-btn w-full text-left p-4 rounded-lg border border-slate-200 hover:bg-slate-50 hover:border-indigo-300 transition duration-150 font-medium text-slate-700">
+                        ${item.text}
+                    </button>
+                `;
+            });
+            document.getElementById('options-container').innerHTML = optionsHtml;
+        }
+
+        function selectAnswer(selectedIdx, correctIdx, btnElement) {
+            if (answered) return;
+            answered = true;
+
+            const q = currentQuizQuestions[currentIndex];
+            const buttons = document.querySelectorAll('.option-btn');
+
+            buttons.forEach(btn => {
+                btn.disabled = true;
+                const text = btn.innerText.trim();
+                const originalIndex = q.options.findIndex(opt => opt.trim() === text);
+                if (originalIndex === correctIdx) {
+                    btn.classList.add('bg-emerald-50', 'border-emerald-500', 'text-emerald-700');
+                }
+            });
+
+            if (selectedIdx === correctIdx) {
+                score++;
+                document.getElementById('score-tracker').innerText = `Đúng: ${score}`;
+            } else {
+                btnElement.classList.remove('border-slate-200', 'hover:bg-slate-50');
+                btnElement.classList.add('bg-rose-50', 'border-rose-500', 'text-rose-700');
+            }
+
+            const expContainer = document.getElementById('explanation-container');
+            expContainer.innerHTML = `<p class="font-semibold text-slate-700 mb-1">Giải thích:</p><p class="text-slate-600">${q.rationale}</p>`;
+            expContainer.classList.remove('hidden');
+
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentIndex++;
+            if (currentIndex < currentQuizQuestions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score-text').innerText = `Bạn đã trả lời đúng ${score}/${currentQuizQuestions.length} câu hỏi.`;
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
